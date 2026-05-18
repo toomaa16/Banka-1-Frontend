@@ -259,6 +259,15 @@ export class LoanRequestComponent implements OnInit, OnDestroy {
           this.isSubmitting = false;
           this.loanResponse = response;
           this.successMessage = `Zahtev je uspešno podnet! Broj zahteva: ${response.requestNumber}`;
+          
+          // Add notification
+          this.notificationService.addNotification({
+            type: NotificationType.LOAN_CREATED,
+            title: 'Zahtev za kredit podnet',
+            message: `Vaš zahtev za ${LoanTypeLabels[response.loanType]} u iznosu od ${response.amount} ${response.currency} je uspešno podnet. Broj zahteva: ${response.requestNumber}`,
+            data: { loanRequest: response }
+          });
+          
           this.form.reset({ currency: Currency.RSD });
           this.submitted = false;
 

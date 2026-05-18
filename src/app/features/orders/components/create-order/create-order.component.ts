@@ -398,8 +398,7 @@ export class CreateOrderComponent implements OnInit {
         const target = this.direction === 'BUY'
           ? (this.purchaseFor === 'INVESTMENT_FUND' && this.selectedFundId ? `/funds/${this.selectedFundId}` : '/portfolio')
           : '/securities';
-        // const target = this.direction === 'BUY' ? '/portfolio' : '/securities';
-        // this.router.navigate([target]);
+        this.router.navigate([target]);
       },
       error: err => {
         this.isSubmitting = false;
