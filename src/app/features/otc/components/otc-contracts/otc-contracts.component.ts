@@ -6,6 +6,10 @@ import { OtcService } from '../../services/otc.service';
 import { StockPriceService } from '../../services/stock-price.service';
 import { OptionContract, OptionContractStatus } from '../../models/otc.model';
 import { AuthService } from '../../../../core/services/auth.service';
+import {
+  daysUntilSettlement,
+  OTC_EXPIRY_WARNING_DAYS,
+} from '../../services/otc-notification-diff';
 
 interface OptionContractView {
   id: number;
@@ -113,6 +117,19 @@ export class OtcContractsComponent implements OnInit, OnDestroy {
     if (this.bankFilter === 'all') return this.contracts;
     if (this.bankFilter === 'banka2') return this.contracts.filter(c => !!c.interbank);
     return this.contracts.filter(c => !c.interbank);
+  }
+
+  /** Celina 4: ugovori koji ističu za N dana ili manje (aktivni, settlement u budućnosti). */
+  get expiringSoonContracts(): OptionContractView[] {
+    return this.visibleContracts.filter((c) => {
+      if (c.status !== 'ACTIVE') return false;
+      const days = daysUntilSettlement(c.settlementDate);
+      return days != null && days > 0 && days <= OTC_EXPIRY_WARNING_DAYS;
+    });
+  }
+
+  daysUntilExpiry(c: OptionContractView): number | null {
+    return daysUntilSettlement(c.settlementDate);
   }
 
   setBankFilter(mode: OtcContractFilterMode): void {

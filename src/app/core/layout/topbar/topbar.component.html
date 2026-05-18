@@ -47,9 +47,43 @@
       </div>
     </div>
 
-    <button type="button" class="z-btn-icon" aria-label="Notifikacije">
-      <lucide-icon name="bell" [size]="16"></lucide-icon>
-    </button>
+    <div class="relative">
+      <button type="button" class="z-btn-icon relative"
+              data-testid="notification-bell"
+              (click)="toggleNotificationMenu()"
+              aria-label="Notifikacije"
+              [attr.aria-expanded]="notificationMenuOpen">
+        <lucide-icon name="bell" [size]="16"></lucide-icon>
+        <span *ngIf="unreadNotificationCount > 0"
+              class="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center leading-none"
+              aria-hidden="true">
+          {{ unreadNotificationCount > 9 ? '9+' : unreadNotificationCount }}
+        </span>
+      </button>
+      <div *ngIf="notificationMenuOpen"
+           data-testid="notification-menu"
+           role="menu"
+           class="absolute right-0 top-full mt-1 z-50 w-[min(360px,calc(100vw-2rem))] max-h-[min(420px,70vh)] overflow-y-auto py-1 bg-card border border-border rounded-lg shadow-lg">
+        <div class="px-3 py-2 border-b border-border">
+          <p class="text-sm font-semibold text-foreground">Notifikacije</p>
+          <p class="text-xs text-muted-foreground">OTC pregovori i ugovori</p>
+        </div>
+        <button *ngIf="notifications.length === 0" type="button" disabled
+                class="w-full px-3 py-6 text-sm text-muted-foreground text-center border-0 bg-transparent cursor-default">
+          Nema novih obaveštenja.
+        </button>
+        <button *ngFor="let n of notifications" type="button" role="menuitem"
+                data-testid="notification-item"
+                (click)="openNotification(n)"
+                class="w-full text-left px-3 py-2.5 text-sm border-0 bg-transparent cursor-pointer hover:bg-accent/40 border-b border-border/60 last:border-b-0"
+                [class.font-medium]="!n.read"
+                [class.text-foreground]="!n.read"
+                [class.text-muted-foreground]="n.read">
+          <span class="block leading-snug">{{ n.message }}</span>
+          <span class="block text-[10px] text-muted-foreground mt-1">{{ n.createdAt | date:'dd.MM.yyyy HH:mm' }}</span>
+        </button>
+      </div>
+    </div>
 
     <div class="relative">
       <button type="button" (click)="toggleAvatarMenu()"

@@ -1,15 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { BehaviorSubject } from 'rxjs';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TopbarComponent } from './topbar.component';
 import { LucideIconComponent } from '../../../shared/icons/lucide-icon.component';
 import { ThemeService } from '../../services/theme.service';
 import { AuthService } from '../../services/auth.service';
+import { AppNotificationService } from '../../../shared/services/app-notification.service';
 
 describe('TopbarComponent', () => {
   let fixture: ComponentFixture<TopbarComponent>;
   let component: TopbarComponent;
   let themeService: jasmine.SpyObj<ThemeService>;
   let authService: jasmine.SpyObj<AuthService>;
+  let appNotifications: jasmine.SpyObj<AppNotificationService>;
 
   beforeEach(async () => {
     themeService = jasmine.createSpyObj('ThemeService', ['setTheme'], {
@@ -20,6 +23,13 @@ describe('TopbarComponent', () => {
       email: 'aleksa.mojovic@banka.com',
       permissions: [],
     });
+    appNotifications = jasmine.createSpyObj('AppNotificationService', [
+      'markAllRead',
+      'markRead',
+    ], {
+      snapshot: [],
+      notifications$: new BehaviorSubject([]),
+    });
 
     await TestBed.configureTestingModule({
       declarations: [TopbarComponent],
@@ -27,6 +37,7 @@ describe('TopbarComponent', () => {
       providers: [
         { provide: ThemeService, useValue: themeService },
         { provide: AuthService, useValue: authService },
+        { provide: AppNotificationService, useValue: appNotifications },
       ],
     }).compileComponents();
 

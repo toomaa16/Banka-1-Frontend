@@ -5,6 +5,8 @@ import { filter } from 'rxjs/operators';
 
 import { AuthService } from '../../services/auth.service';
 import { Theme, ThemeService } from '../../services/theme.service';
+import { AppNotification } from '../../../shared/models/app-notification.model';
+import { AppNotificationService } from '../../../shared/services/app-notification.service';
 
 type ThemeIcon = 'sun' | 'moon' | 'monitor';
 
@@ -48,8 +50,11 @@ export class TopbarComponent implements OnInit, OnDestroy {
   breadcrumb: string[] = [];
   themeMenuOpen = false;
   avatarMenuOpen = false;
+  notificationMenuOpen = false;
+  notifications: AppNotification[] = [];
   userInitials = '';
   private sub?: Subscription;
+  private notificationSub?: Subscription;
 
   readonly themes: Theme[] = ['system', 'light', 'dark'];
 
@@ -57,6 +62,7 @@ export class TopbarComponent implements OnInit, OnDestroy {
     public theme: ThemeService,
     private auth: AuthService,
     private router: Router,
+    private appNotifications: AppNotificationService,
   ) {}
 
   ngOnInit(): void {
@@ -67,10 +73,34 @@ export class TopbarComponent implements OnInit, OnDestroy {
       .subscribe((e) => {
         this.refreshBreadcrumb((e as NavigationEnd).urlAfterRedirects);
       });
+
+    this.notifications = this.appNotifications.snapshot;
+    this.notificationSub = this.appNotifications.notifications$.subscribe((items) => {
+      this.notifications = items;
+    });
   }
 
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
+    this.notificationSub?.unsubscribe();
+  }
+
+  get unreadNotificationCount(): number {
+    return this.notifications.filter((n) => !n.read).length;
+  }
+
+  toggleNotificationMenu(): void {
+    const next = !this.notificationMenuOpen;
+    this.closeMenus();
+    this.notificationMenuOpen = next;
+  }
+
+  openNotification(n: AppNotification): void {
+    this.notificationMenuOpen = false;
+    this.appNotifications.markRead(n.id);
+    if (n.route) {
+      this.router.navigateByUrl(n.route);
+    }
   }
 
   setTheme(t: Theme): void {
@@ -97,6 +127,7 @@ export class TopbarComponent implements OnInit, OnDestroy {
   closeMenus(): void {
     this.themeMenuOpen = false;
     this.avatarMenuOpen = false;
+    this.notificationMenuOpen = false;
   }
 
   logout(): void {

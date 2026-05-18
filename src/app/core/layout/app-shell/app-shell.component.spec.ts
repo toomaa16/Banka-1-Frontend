@@ -3,16 +3,20 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { AppShellComponent } from './app-shell.component';
+import { OtcNotificationMonitorService } from '../../../features/otc/services/otc-notification-monitor.service';
 
 describe('AppShellComponent', () => {
   let fixture: ComponentFixture<AppShellComponent>;
   let component: AppShellComponent;
 
   beforeEach(async () => {
+    const otcMonitor = jasmine.createSpyObj('OtcNotificationMonitorService', ['start', 'stop']);
+
     await TestBed.configureTestingModule({
       declarations: [AppShellComponent],
       imports: [RouterTestingModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      providers: [{ provide: OtcNotificationMonitorService, useValue: otcMonitor }],
     }).compileComponents();
     fixture = TestBed.createComponent(AppShellComponent);
     component = fixture.componentInstance;
