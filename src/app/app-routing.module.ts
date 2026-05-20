@@ -36,6 +36,7 @@ import { PortfolioComponent } from './features/client/components/portfolio/portf
 import { ProfileComponent } from './features/client/components/profile/profile.component';
 import { portfolioAccessGuard } from './core/guards/portfolio-access.guard';
 import { WatchlistComponent } from './features/watchlist/components/watchlist/watchlist.component';
+import { PriceAlertsPageComponent } from './features/price-alerts/components/price-alerts/price-alerts.component';
 
 const routes: Routes = [
   {
@@ -157,6 +158,11 @@ const routes: Routes = [
     path: 'watchlist',
     component: WatchlistComponent,
     canActivate: [authGuard, portfolioAccessGuard],
+  },
+    path: 'price-alerts',
+    component: PriceAlertsPageComponent,
+    canActivate: [authGuard, portfolioAccessGuard],
+    data: { title: 'Price alerti' },
   },
   {
     path: '',
