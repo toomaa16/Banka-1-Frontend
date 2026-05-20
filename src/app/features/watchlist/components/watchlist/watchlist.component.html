@@ -12,12 +12,20 @@
     <div class="z-card controls-card">
         <div class="controls-grid">
             <div>
-                <label class="z-label">Izaberite watchlistu</label>
-                <select class="z-select" [(ngModel)]="selectedWatchlistId">
-                    <option *ngFor="let watchlist of watchlists" [ngValue]="watchlist.id">
-                        {{ watchlist.name }}
-                    </option>
-                </select>
+              <label class="z-label">Izaberite watchlistu</label>
+              <select
+                class="z-select"
+                [(ngModel)]="selectedWatchlistId"
+                [disabled]="watchlists.length === 0"
+              >
+                <option value="" disabled>
+                  {{ watchlists.length === 0 ? 'Prvo kreirajte watchlistu' : 'Izaberite watchlistu' }}
+                </option>
+
+                <option *ngFor="let watchlist of watchlists" [ngValue]="watchlist.id">
+                  {{ watchlist.name }}
+                </option>
+              </select>
             </div>
 
             <div>
@@ -32,13 +40,13 @@
             <div>
                 <label class="z-label">Nova watchlista</label>
                 <div class="create-row">
-                    <input
-                            class="z-input"
-                            type="text"
-                            placeholder="npr. Tech akcije"
-                            [(ngModel)]="newWatchlistName"
-                            (keyup.enter)="createWatchlist()"
-                    />
+                  <input
+                    class="z-input"
+                    type="text"
+                    placeholder="Unesite naziv watchliste"
+                    [(ngModel)]="newWatchlistName"
+                    (keyup.enter)="createWatchlist()"
+                  />
 
                     <button
                             type="button"
@@ -66,13 +74,19 @@
       </span>
         </div>
 
-        <div *ngIf="filteredSecurities.length === 0" class="empty-state">
-            Ova watchlista nema hartije za izabrani filter.
-            <br />
-            Hartije možete dodati iz Portala hartija klikom na “Dodaj na watchlist”.
-        </div>
+      <div *ngIf="watchlists.length === 0" class="empty-state">
+        Nemate kreiranu watchlistu.
+        <br />
+        Unesite naziv iznad i kliknite “Kreiraj”.
+      </div>
 
-        <div *ngIf="filteredSecurities.length > 0" class="table-wrapper">
+      <div *ngIf="watchlists.length > 0 && filteredSecurities.length === 0" class="empty-state">
+        Ova watchlista nema hartije za izabrani filter.
+        <br />
+        Hartije možete dodati iz Portala hartija klikom na “Dodaj na watchlist”.
+      </div>
+
+      <div *ngIf="watchlists.length > 0 && filteredSecurities.length > 0" class="table-wrapper">
             <table class="z-table watchlist-table">
                 <thead>
                 <tr>

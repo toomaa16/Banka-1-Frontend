@@ -159,6 +159,7 @@ const routes: Routes = [
     component: WatchlistComponent,
     canActivate: [authGuard, portfolioAccessGuard],
   },
+  {
     path: 'price-alerts',
     component: PriceAlertsPageComponent,
     canActivate: [authGuard, portfolioAccessGuard],

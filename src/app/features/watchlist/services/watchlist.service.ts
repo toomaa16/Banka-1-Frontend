@@ -85,18 +85,7 @@ export class WatchlistService {
       }
     }
 
-    return [
-      {
-        id: 'tech',
-        name: 'Tech akcije',
-        securities: [],
-      },
-      {
-        id: 'forex',
-        name: 'Forex parovi',
-        securities: [],
-      },
-    ];
+    return [];
   }
 
   private updateWatchlists(watchlists: Watchlist[]): void {
