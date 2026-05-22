@@ -29,7 +29,7 @@ export class FundService {
   constructor(private http: HttpClient) {}
 
   getFundHistory(fundId: number, period: string): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/${fundId}/history`, {
+    return this.http.get<any>(`${this.baseUrl}/${fundId}/performance`, {
       params: { period }
     });
   }
