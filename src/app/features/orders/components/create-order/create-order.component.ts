@@ -8,6 +8,8 @@ import { Account } from '../../../client/models/account.model';
 import { AccountService } from '../../../client/services/account.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ToastService } from '../../../../shared/services/toast.service';
+import { NotificationService } from '../../../../shared/services/notification.service';
+import { NotificationType } from '../../../../shared/models/notification.model';
 import { OrderService } from '../../services/order.service';
 import { OrderDirection, OrderResponse, OrderType, PurchaseFor } from '../../models/order.model';
 import { PortfolioService } from '../../../client/services/portfolio.service';
@@ -61,6 +63,7 @@ export class CreateOrderComponent implements OnInit {
     private readonly toastService: ToastService,
     private readonly portfolioService: PortfolioService,
     private readonly fundService: FundService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   ngOnInit(): void {
@@ -351,6 +354,14 @@ export class CreateOrderComponent implements OnInit {
 
     request$.subscribe({
       next: order => {
+        // Add notification
+        this.notificationService.addNotification({
+          type: NotificationType.ORDER_PENDING,
+          title: 'Order poslat na odobrenje',
+          message: `Vaš ${this.direction === 'BUY' ? 'kupovni' : 'prodajni'} order za ${order.quantity} $(order.quantity > 1 ? 'hartija' : 'hartije') po ceni od ${this.formatMoney(order.pricePerUnit)} je poslat na odobrenje.`,
+          data: { order: order }
+        });
+        
         this.draftOrder = order;
         this.showConfirmation = true;
         this.isSubmitting = false;
@@ -369,6 +380,14 @@ export class CreateOrderComponent implements OnInit {
 
     this.orderService.confirmOrder(this.draftOrder.id).subscribe({
       next: order => {
+        // Add notification
+        this.notificationService.addNotification({
+          type: NotificationType.ORDER_COMPLETED,
+          title: 'Order potvrđen i obrađen',
+          message: `Vaš ${this.direction === 'BUY' ? 'kupovni' : 'prodajni'} order ID ${order.id} je potvrđen i u obradi.`,
+          data: { order: order }
+        });
+        
         this.isSubmitting = false;
         this.showConfirmation = false;
         this.toastService.success('Order je uspešno potvrđen.');
@@ -394,8 +413,18 @@ export class CreateOrderComponent implements OnInit {
       return;
     }
 
+    const orderId = this.draftOrder.id;
+
     this.orderService.cancelOrder(this.draftOrder.id).subscribe({
       next: () => {
+        // Add notification
+        this.notificationService.addNotification({
+          type: NotificationType.ORDER_CANCELLED,
+          title: 'Order otkazan',
+          message: `Vaš order ID ${orderId} je uspešno otkazan.`,
+          data: { orderId: orderId }
+        });
+        
         this.showConfirmation = false;
         this.draftOrder = null;
       },

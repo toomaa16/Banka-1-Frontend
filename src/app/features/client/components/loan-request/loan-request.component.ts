@@ -6,6 +6,8 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { LoanService } from '../../services/loan.service';
 import { AccountService } from '../../services/account.service';
+import { NotificationService } from '../../../../shared/services/notification.service';
+import { NotificationType } from '../../../../shared/models/notification.model';
 import { phoneValidator } from '../../../../shared/validators/custom-validators';
 import {
   LoanRequestDto,
@@ -82,6 +84,7 @@ export class LoanRequestComponent implements OnInit, OnDestroy {
     private readonly fb: FormBuilder,
     private readonly loanService: LoanService,
     private readonly accountService: AccountService,
+    private readonly notificationService: NotificationService,
     private readonly router: Router
   ) {
     this.initializeForm();
@@ -260,6 +263,15 @@ export class LoanRequestComponent implements OnInit, OnDestroy {
           this.isSubmitting = false;
           this.loanResponse = response;
           this.successMessage = `Zahtev je uspešno podnet! Broj zahteva: ${response.requestNumber}`;
+          
+          // Add notification
+          this.notificationService.addNotification({
+            type: NotificationType.LOAN_CREATED,
+            title: 'Zahtev za kredit podnet',
+            message: `Vaš zahtev za ${LoanTypeLabels[response.loanType]} u iznosu od ${response.amount} ${response.currency} je uspešno podnet. Broj zahteva: ${response.requestNumber}`,
+            data: { loanRequest: response }
+          });
+          
           this.form.reset({ currency: Currency.RSD });
           this.submitted = false;
 

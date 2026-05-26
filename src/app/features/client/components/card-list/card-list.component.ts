@@ -6,6 +6,8 @@ import { catchError, switchMap } from 'rxjs/operators';
 import { CardService, AccountDto } from '../../services/card.service';
 import { Card } from '../../models/card.model';
 import { BlockCardDialogComponent } from '../../modals/block-card-dialog/block-card-dialog.component';
+import { NotificationService } from '../../../../shared/services/notification.service';
+import { NotificationType } from '../../../../shared/models/notification.model';
 import {RouterModule} from "@angular/router";
 // PR_31 T11: shared StateComponent za loading/empty/error markup.
 import { StateComponent } from '../../../../shared/components/state/state.component';
@@ -43,7 +45,10 @@ export class CardListComponent implements OnInit {
   showBlockDialog = false;
   cardToBlock: Card | null = null;
 
-  constructor(private readonly cardService: CardService) {}
+  constructor(
+    private readonly cardService: CardService,
+    private readonly notificationService: NotificationService
+  ) {}
 
   public ngOnInit(): void {
     this.loadAllCards();
@@ -116,6 +121,14 @@ export class CardListComponent implements OnInit {
 
     this.cardService.blockCard(this.cardToBlock.id).subscribe({
       next: () => {
+        // Add notification
+        this.notificationService.addNotification({
+          type: NotificationType.CARD_BLOCKED,
+          title: 'Kartica blokirana',
+          message: `Kartica ${this.maskCardNumber(this.cardToBlock!.cardNumber)} je uspešno blokirana.`,
+          data: { card: this.cardToBlock }
+        });
+        
         this.onCancelAction();
         this.loadAllCards();
       },
