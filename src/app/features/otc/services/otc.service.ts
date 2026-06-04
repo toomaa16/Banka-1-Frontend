@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, forkJoin, of, timer } from 'rxjs';
 import { catchError, map, retry, tap } from 'rxjs/operators';
 
@@ -15,7 +15,9 @@ import {
   InterbankNegotiationView,
   OptionContract,
   OptionContractStatus,
+  OtcHistoryParams,
   OtcOffer,
+  OtcOfferHistoryEvent,
   OtcPosition,
   OtcPublicStockGroup,
   UpdateOtcPositionRequest,
@@ -114,6 +116,15 @@ export class OtcService {
       ? `${this.baseUrl}/contracts/my?status=${status}`
       : `${this.baseUrl}/contracts/my`;
     return this.etagCache.getJson<OptionContract[]>(url);
+  }
+
+  getHistory(params: OtcHistoryParams): Observable<OtcOfferHistoryEvent[]> {
+    let httpParams = new HttpParams();
+    if (params.status) httpParams = httpParams.set('status', params.status);
+    if (params.otherPartyId != null) httpParams = httpParams.set('otherPartyId', String(params.otherPartyId));
+    if (params.dateFrom) httpParams = httpParams.set('dateFrom', params.dateFrom);
+    if (params.dateTo) httpParams = httpParams.set('dateTo', params.dateTo);
+    return this.http.get<OtcOfferHistoryEvent[]>(`${this.baseUrl}/offers/history`, { params: httpParams });
   }
 
   // ------------------------------------------------------------------

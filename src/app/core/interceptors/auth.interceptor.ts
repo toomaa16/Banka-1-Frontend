@@ -83,6 +83,7 @@
       // pokusaj inace bi 404 → logout izbacio korisnika na obicnom 401 zahtevu.
       const refreshToken = localStorage.getItem('refreshToken');
       if (!refreshToken) {
+        this.authService.logout();
         return throwError(() => new HttpErrorResponse({ status: 401, statusText: 'Unauthorized' }));
       }
       if (!this.isRefreshing) {
@@ -98,12 +99,7 @@
           catchError(err => {
             this.isRefreshing = false;
             this.refreshTokenSubject.next('');
-
-            // Ranije: bezuslovno logout kad refresh fail-uje. Posledica: 404 na
-            // refresh endpoint (npr. cross-domain ili pre nego se backend dize)
-            // izloguje korisnika cak i kad je njegov access token jos uvek
-            // validan. Sad samo prosledjujemo error; ako je access token zaista
-            // istekao, authGuard ce hvatiti pri sledecoj navigaciji.
+            this.authService.logout();
             return throwError(() => err);
           })
         );

@@ -87,6 +87,35 @@ export interface CounterOfferRequest {
   settlementDate: string;
 }
 
+export interface OtcHistoryParams {
+  status?: OtcOfferStatus;
+  otherPartyId?: number;
+  dateFrom?: string;
+  dateTo?: string;
+}
+
+export interface OtcOfferHistoryEvent {
+  id: number;
+  offerId: number;
+  buyerId: number;
+  sellerId: number;
+  actorId: number;
+  actorName: string | null;
+  eventType: string;
+  stockTicker: string;
+  oldAmount: number | null;
+  newAmount: number;
+  oldPricePerStock: number | null;
+  newPricePerStock: number;
+  oldPremium: number | null;
+  newPremium: number;
+  oldSettlementDate: string | null;
+  newSettlementDate: string;
+  oldStatus: OtcOfferStatus | null;
+  newStatus: OtcOfferStatus;
+  changedAt: string;
+}
+
 /**
  * PR_14 C14.5: backend response za GET /otc/contracts/my (vidi
  * OptionContractDto.java). Premium NIJE deo ugovora — placen je u trenutku

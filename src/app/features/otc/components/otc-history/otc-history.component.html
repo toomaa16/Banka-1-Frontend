@@ -18,8 +18,8 @@
         </select>
       </div>
       <div>
-        <label class="z-label">Druga strana (Klijent)</label>
-        <input type="text" [(ngModel)]="filters.counterparty" placeholder="Npr. Klijent #1024" class="z-input">
+        <label class="z-label">Druga strana (ID)</label>
+        <input type="number" [(ngModel)]="filters.otherPartyId" placeholder="Npr. 1024" class="z-input">
       </div>
       <div>
         <label class="z-label">Od datuma</label>
@@ -58,7 +58,7 @@
               <span class="inline-block transition-transform" [class.rotate-90]="neg.expanded">▶</span>
             </td>
             <td class="font-mono font-bold">{{ neg.offer.stockTicker }}</td>
-            <td class="font-medium">Kupac: {{ neg.offer.buyerId }} | Prodavac: {{ neg.offer.sellerId }}</td>
+            <td class="font-medium">{{ neg.counterpartyName }}</td>
             <td>
               <span class="z-badge" 
                     [class.z-badge-green]="neg.offer.status === 'ACCEPTED'"
@@ -67,7 +67,8 @@
                 {{ neg.offer.status }}
               </span>
             </td>
-            <td class="text-sm">—</td> <td class="text-sm">{{ neg.offer.lastModified | date:'short' }}</td>
+            <td class="text-sm">{{ neg.createdAt | date:'short' }}</td>
+            <td class="text-sm">{{ neg.offer.lastModified | date:'short' }}</td>
           </tr>
           
           <tr *ngIf="neg.expanded" class="bg-muted/20 border-b border-border">

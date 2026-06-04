@@ -267,7 +267,11 @@ const routes: Routes = [
     path: 'otc',
     loadChildren: () =>
       import('./features/otc/otc.module').then((m) => m.OtcModule),
-    canActivate: [authGuard],
+    canActivate: [authGuard, roleGuard],
+    data: {
+      anyPermission: ['OTC_TRADE', 'TRADE_UNLIMITED', 'SECURITIES_TRADE_UNLIMITED'],
+      anyRole: ['CLIENT_TRADING', 'SUPERVISOR', 'ADMIN'],
+    },
   },
   {
     // PR_04 C4.15: investicioni fondovi (lazy-loaded).
